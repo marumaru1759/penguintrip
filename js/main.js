@@ -3,7 +3,7 @@ enchant ();
 
 window.onload = function () {
     var game = new Game(420,320);
-    game.preload('asset/penguin.png','asset/cloud1.png','asset/ice_horizon.png','asset/seal.png');
+    game.preload('asset/penguin.png','asset/cloud1.png','asset/ice_horizon.png','asset/seal.png','asset/snowboy.png');
     game.preload('asset/waltz.mp3');
     game.fps = 30;
     
@@ -34,7 +34,9 @@ window.onload = function () {
     var firststage = new Scene();
     var penguin = new Sprite(30,35);
         penguin.jump = false;
-    var penguinhit = new Sprite(2,2);
+    
+    var penguinhit = new Sprite(3,3);
+    
     var cloud1 = new Sprite(92,62);
     var cloud2 = new Sprite(92,62);
     
@@ -42,11 +44,17 @@ window.onload = function () {
     for( i=0; i < 3; i++){
         ice[i] = new Sprite(250,30);
     }
-    var score = new Label();       
-
-    var starttime = new Date().getTime();
+    
+    var starttime = 0;
+    var score = new Label();      
 
     var seal = new Sprite(50,35);
+    seal.speed = 3;
+
+    var snowboy = new Sprite(50,50);
+    var snowboymsg = new Label("Welcome to South Pole")
+    snowboymsg.x = 150; snowboymsg.y = 230
+    snowboymsg.font = "12px meiryo";
 
     // describe auto horizontal scroll
         //firststage.addEventListener('enterframe',function(){
@@ -73,7 +81,7 @@ window.onload = function () {
         })
 
     // how to control penguin
-        //penguin is stepping
+        //penguin is stepping or jumping
         penguin.addEventListener('enterframe',function(){
             if(game.input.up)
                 if(penguin.jump){
@@ -81,10 +89,12 @@ window.onload = function () {
             } else { 
                  penguin.jump = true;
                  penguin.frame = 5;
+                 penguinhit.tl.moveBy(0,-80,20).moveBy(0,80,20);
                  penguin.tl.moveBy(0,-80,20).moveBy(0,80,20).then(function(){
                     penguin.frame = 2;
                     penguin.jump = false;
                  });
+                 
             }
             else
                 if(penguin.jump){
@@ -107,27 +117,52 @@ window.onload = function () {
         // seal is attacking
 
         seal.addEventListener('enterframe',function(){
-            seal.x -=3 ;
-            if(this.intersect(penguin)){   
+            seal.x -= seal.speed ;
+            if(this.intersect(penguinhit)){   
                 penguin.clearEventListener('enterframe');
                 firststage.clearEventListener('enterframe');
                 seal.clearEventListener('enterframe');
-                penguin.frame = 10;
+                score.clearEventListener('enterframe');
+                penguin.frame = 9;
+                setTimeout(function(){
+                    game.onload();
+                }, 3000);
             }else{
-                //nothing happens
+               if(seal.x <= -50){
+                seal.x = 370;
+                seal.speed = Math.floor(Math.random() * 4 + 2);
+                console.log(seal.speed);
+               } 
             }
-        })
-
-        // seal hits penguin
+         })
 
 
 
        //score is increasing
 
        score.addEventListener('enterframe',function(){
-         score.value = 1000 - Math.floor((new Date().getTime() - starttime)/1000);
-         score.text = "南極点まで残り " + score.value + " km";
-       })
+        if(score.value >= 0){
+                score.value = 50 - Math.floor((new Date().getTime() - starttime)/1000);
+                score.text = "南極点まで残り " + score.value + " km";
+        } else {
+            score.text = "南極点まで残り " + "0" + " km";
+            firststage.addChild(snowboy);
+            snowboy.x--;
+            seal.speed = -4;
+            if (snowboy.x <= 100){
+                snowboy.x = 100;
+                penguin.clearEventListener('enterframe');
+                firststage.clearEventListener('enterframe');
+                firststage.addChild(snowboymsg);
+
+                setTimeout(function(){
+                    game.onload();
+                }, 3000);
+
+            }
+            }   
+         }
+       )
 
 
     // transferred from title to first stage
@@ -140,9 +175,12 @@ window.onload = function () {
         
         penguin.image = game.assets['asset/penguin.png'];
         penguin.x = 20; penguin.y = 255;
-        //penguinhit.x = penguin.x + 14;
-        //penguinhit.y = penguin.y + 17
+        penguinhit.x = penguin.x + 14;
+        penguinhit.y = penguin.y + 17;
+        
+        
         firststage.addChild(penguin);
+        firststage.addChild(penguinhit);
 
         // display cloud
 
@@ -169,14 +207,18 @@ window.onload = function () {
         firststage.addChild(seal);
 
         //display score upper-right on the first stage
-
-        score.value = 1000;
+        score.value = 50;
+        starttime = new Date().getTime();
 
         score.x = 220;
         score.y = 15;
         score.text = "南極点まで残り " + score.value + " km";
         score.font = "14px meiryo"
         firststage.addChild(score);
+
+        //display snow boy
+        snowboy.image = game.assets['asset/snowboy.png'];
+        snowboy.x = 370; snowboy.y = 241;
 
         //stop prologue thema song
     });   
