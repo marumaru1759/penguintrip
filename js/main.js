@@ -4,7 +4,7 @@ enchant ();
 window.onload = function () {
     var game = new Game(420,320);
     game.preload('asset/penguin.png','asset/cloud1.png','asset/ice_horizon.png','asset/seal.png','asset/snowboy.png');
-    game.preload('asset/waltz.mp3');
+    game.preload('asset/waltz.mp3','asset/finale.mp3','asset/death.mp3');
     game.fps = 30;
     
     game.onload = function(){
@@ -123,6 +123,8 @@ window.onload = function () {
                 firststage.clearEventListener('enterframe');
                 seal.clearEventListener('enterframe');
                 score.clearEventListener('enterframe');
+                game.assets['asset/waltz.mp3'].stop();
+                game.assets['asset/death.mp3'].play();
                 penguin.frame = 9;
                 setTimeout(function(){
                     game.onload();
@@ -154,10 +156,12 @@ window.onload = function () {
                 penguin.clearEventListener('enterframe');
                 firststage.clearEventListener('enterframe');
                 firststage.addChild(snowboymsg);
+                game.assets['asset/waltz.mp3'].stop();
+                game.assets['asset/finale.mp3'].play();
 
                 setTimeout(function(){
                     game.onload();
-                }, 3000);
+                }, 5500);
 
             }
             }   
@@ -207,7 +211,7 @@ window.onload = function () {
         firststage.addChild(seal);
 
         //display score upper-right on the first stage
-        score.value = 50;
+        score.value = 20;
         starttime = new Date().getTime();
 
         score.x = 220;
@@ -221,6 +225,7 @@ window.onload = function () {
         snowboy.x = 370; snowboy.y = 241;
 
         //stop prologue thema song
+         game.assets['asset/waltz.mp3'].play();
     });   
 
 
