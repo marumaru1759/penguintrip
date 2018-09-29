@@ -57,9 +57,9 @@ window.onload = function () {
     snowboymsg.font = "12px meiryo";
 
     // describe auto horizontal scroll
-        //firststage.addEventListener('enterframe',function(){
-        //   game.assets['asset/waltz.mp3'].play();
-        //})
+        firststage.addEventListener('enterframe',function(){
+           game.assets['asset/waltz.mp3'].play();
+        })
 
         firststage.addEventListener('enterframe', function(){
            
